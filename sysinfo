@@ -1,4 +1,26 @@
 --SysInfo by Atenefyr
+--[[
+Copyright (c) 2015 Atenefyr
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+]]
+
+--[[
+What's new for 15m7d7?
+- Dropped os._NAME and os._VERSION in favor for _G.osdata.name and _G.osdata.version
+- Removed extraneous spaces
+- Added partial support for Command Alpha
+- Added partial support for LoveOS
+- Added partial support for LinOS
+- Lua Script System now has full support
+- Patched ChromeOS detection
+- Patched BananaOS detection
+- Patched unexpected behavior when os.version has more than 2 spaces
+]]
 
 local function explode(div,str) -- credit: http://richard.warburton.it
   if (div=='') then return false end
@@ -15,9 +37,9 @@ end
 function getos()
 local ost = ""
 local v = ""
-if os._NAME and os._VERSION then
-  ost = os._NAME
-  v = os._VERSION
+if osdata then
+  ost = osdata.name
+  v = osdata.version
 elseif fs.exists(".os_info") then
   local open = fs.open(".os_info", "r")
   ost = open.readLine()
@@ -31,7 +53,7 @@ elseif fs.isDir("LyqydOS") then
 	until line:find("versionNumber")
 	line = line:gsub("local ", "")
 	loadstring(line)()
-	v = " " .. versionNumber
+	v = versionNumber
   end
   ost = "LyqydOS"
 elseif fs.exists("rainos") and fs.isDir("rainos") then
@@ -43,6 +65,8 @@ elseif lyokos then
   v = lyokos.version()
 elseif fs.exists("users") and fs.isDir("users") and fs.exists("accountDatabase") and fs.exists("updateOS") then
   ost = "NanoOS"
+elseif fs.isDir("Love") then
+  ost = "LoveOS"
 elseif VERSION_STRING and VERSION_STRING:match("XWin") then
   ost = VERSION_STRING:gsub("Kernel Version ", "")
 elseif fs.exists("ZROOT") and fs.isDir("ZROOT") then
@@ -50,11 +74,15 @@ elseif fs.exists("ZROOT") and fs.isDir("ZROOT") then
 elseif fs.exists(".shell.log") then
   ost = os.version() .. " Extended Shell"
 elseif OneOS then
-  ost = "OneOS "
+  ost = "OneOS"
   v = OneOS.Version()
 elseif not OneOS and fs.exists("/System/APIs/System.lua") then
   ost = "OneOS 2"
   v = "2"
+elseif cmd or fs.isDir(".cmd") then --APIs can't access "cmd" for some stupid reason
+  ost = "Command Alpha"
+elseif fs.exists("system/os/apps/desktop") then
+  ost = "LinOS"
 elseif not oneOS and fs.exists("/System/API/Bedrock.lua") then
   ost = "OneOS"
   v = "1"
@@ -81,10 +109,9 @@ elseif fs.exists("OS/chromestore") and fs.exists("OS/choose") then
     line = open.readLine()
   until line:find("version")
   open.close()
-  line = line:gsub("local ", "")
-  loadstring(line)()
+  line = line:gsub("local version = ", "")
+  v = loadstring("return " .. line)()
   ost = "ChromeOS"
-  v = version
 elseif fs.exists("OS/chromestore") and fs.isDir("OS") and fs.exists("OS/d2.img") then
   ost = "ChromeOS"
   v = "2.0"
@@ -213,12 +240,14 @@ elseif fs.exists("home") and fs.isDir("home") and fs.exists("home/mouse.cfg") th
   ost = "CryptonOS"
 elseif fs.exists("System") and fs.isDir("System") and fs.exists("System/PearOS.lua") then
   ost = "PearOS"
-elseif fs.exists("LuaSS") and fs.isDir("LuaSS") then
-  local version = ""
-  if getVersion then
-    version = getVersion()
-  end
-  v = version or ""
+elseif fs.exists("LuaSS/apis/LuaSS") then
+  local open = fs.open("LuaSS/apis/LuaSS", "r")
+  repeat
+    l = open.readLine()
+  until l:find("version = ")
+  l = l:gsub("version =", "return")
+  open.close()
+  v = loadstring(l)()
   ost = "LuaSS"
 elseif fs.exists("/system/config/version") and fs.exists("/system/apis/skylark") then
   local open = fs.open("/system/config/version", "r")
@@ -301,9 +330,9 @@ elseif fs.isDir("BananaOS") and fs.exists("BananaOS/system") then
     l = open.readLine()
   until l:find("version = ")
   open.close()
-  loadstring(l)()
+  l = l:gsub("version = ", "")
+  v = loadstring("return " .. l)()
   ost = "BananaOS"
-  v = version
 elseif OTOS then
   if OTOS.version then
     v = OTOS.version
@@ -328,8 +357,12 @@ elseif fs.exists("kernel/TestRunner.lua") and not fs.exists("usr/etc/release") t
 else
   if os.version then
     t = explode(" ", os.version())
-	ost = t[1]
-	v = t[2]
+	ost = ""
+	for i = 1, #t-1 do
+	  ost = ost .. t[i] .. " "
+	end
+	ost = ost:sub(1,-2)
+	v = t[#t]
   else
     ost = "CraftOS"
   end
@@ -365,5 +398,5 @@ function getdevice()
 end
 
 function version() --SysInfo version
-  return "15m7d5-3502" --I tried to abbreviate the time and date (in CST/CDT) and failed. When SysInfo leaves alpha and beta, this will become an actual version number
+  return "15m7d7" --July 7th, 2015
 end
