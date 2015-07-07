@@ -1,0 +1,369 @@
+--SysInfo by Atenefyr
+
+local function explode(div,str) -- credit: http://richard.warburton.it
+  if (div=='') then return false end
+  local pos,arr = 0,{}
+  -- for each divider found
+  for st,sp in function() return string.find(str,div,pos,true) end do
+    table.insert(arr,string.sub(str,pos,st-1)) -- Attach chars left of current divider
+    pos = sp + 1 -- Jump past current divider
+  end
+  table.insert(arr,string.sub(str,pos)) -- Attach chars right of last divider
+  return arr
+end
+
+function getos()
+local ost = ""
+local v = ""
+if os._NAME and os._VERSION then
+  ost = os._NAME
+  v = os._VERSION
+elseif fs.exists(".os_info") then
+  local open = fs.open(".os_info", "r")
+  ost = open.readLine()
+  v = open.readLine()
+  open.close()
+elseif fs.isDir("LyqydOS") then
+  if fs.exists("LyqydOS/installer") then
+    local open = fs.open("LyqydOS/installer", "r")
+	repeat
+	  line = open.readLine()
+	until line:find("versionNumber")
+	line = line:gsub("local ", "")
+	loadstring(line)()
+	v = " " .. versionNumber
+  end
+  ost = "LyqydOS"
+elseif fs.exists("rainos") and fs.isDir("rainos") then
+  ost = "RainOS"
+elseif fs.exists(".kernel/apis/cinter") and fs.exists(".kernel/core/plist") then
+  ost = "Base"
+elseif lyokos then
+  ost = "LyokOS"
+  v = lyokos.version()
+elseif fs.exists("users") and fs.isDir("users") and fs.exists("accountDatabase") and fs.exists("updateOS") then
+  ost = "NanoOS"
+elseif VERSION_STRING and VERSION_STRING:match("XWin") then
+  ost = VERSION_STRING:gsub("Kernel Version ", "")
+elseif fs.exists("ZROOT") and fs.isDir("ZROOT") then
+  ost = "ZoS"
+elseif fs.exists(".shell.log") then
+  ost = os.version() .. " Extended Shell"
+elseif OneOS then
+  ost = "OneOS "
+  v = OneOS.Version()
+elseif not OneOS and fs.exists("/System/APIs/System.lua") then
+  ost = "OneOS 2"
+  v = "2"
+elseif not oneOS and fs.exists("/System/API/Bedrock.lua") then
+  ost = "OneOS"
+  v = "1"
+elseif fs.exists("LabyOS") and fs.isDir("LabyOS") then
+  ost = "LabyOS"
+elseif fs.exists("NxOS") and fs.isDir("NxOS") and fs.exists("NxOS/Files") then
+  ost = "NxOS"
+  v = "1.0"
+elseif fs.exists("NxOS") and fs.isDir("NxOS") then
+  ost = "NxOS"
+  v = "2.0"
+elseif fs.exists(".sertexos") and fs.isDir(".sertexos") then
+  ost = "SertexOS"
+elseif fs.exists("LimeFyre/.version") then
+  local open = fs.open("LimeFyre/.version", "r")
+  v = open.readAll()
+  open.close()
+  ost = "LimeFyre 2"
+elseif fs.exists("skins/limefyre") then
+  ost = "LimeFyre Classic"
+elseif fs.exists("OS/chromestore") and fs.exists("OS/choose") then
+  local open = fs.open("OS/choose", "r")
+  repeat
+    line = open.readLine()
+  until line:find("version")
+  open.close()
+  line = line:gsub("local ", "")
+  loadstring(line)()
+  ost = "ChromeOS"
+  v = version
+elseif fs.exists("OS/chromestore") and fs.isDir("OS") and fs.exists("OS/d2.img") then
+  ost = "ChromeOS"
+  v = "2.0"
+elseif fs.exists("OS/chromestore") and fs.isDir("OS") and fs.exists("OS/passwort") then
+  ost = "ChromeOS"
+  v = "2.5"
+elseif fs.exists("OS/chromestore") and fs.isDir("OS") then
+  ost = "ChromeOS"
+elseif fs.exists("kepler") and fs.isDir("kepler") then
+  ost = "KeplerOS"
+elseif fs.exists("LongOS") and fs.isDir("LongOS") then
+  ost = "LongOS"
+elseif fs.exists("terminal_starter") then
+  ost = "AdmiOS"
+elseif fs.exists("prezentace") then
+  ost = "Pepdroll Classic"
+elseif fs.exists(".core/biosset") then
+  ost = "Pepdroll Six Professional"
+elseif fs.exists("flix") and fs.exists("apps/desktop/desktop") then
+  ost = "FlixOS"
+  v = "Metro"
+elseif fs.exists(".background") and fs.exists("gui") then
+  ost = "FlixOS"
+  v = "Beta"
+elseif fs.exists("logo") and fs.exists("bk1") and fs.exists("bk2") then
+  ost = "Stained Glass OS"
+elseif fs.exists("system/pocketshell") then
+  ost = "PocketShell"
+elseif fs.exists("pockyOS") and fs.isDir("pockyOS") then
+  ost = "PockyOS"
+elseif fs.exists("/kernel/locker") then
+  ost = "Unix for Minecraft"
+elseif fs.exists("/boot/uberkernel") then
+  ost = "UberOS"
+elseif fs.exists("login~") then
+  ost = "bOS"
+elseif fs.exists("doorOS") and fs.isDir("doorOS") then
+  ost = "DoorOS"
+elseif version and OStag == "ApfelOS" then
+  v = version
+  ost = "ApfelOS"
+elseif fs.exists("ApfelOS_PE") then
+  v = version
+  ost = "ApfelOS PE"
+elseif fs.isDir("Windows7") and fs.exists("Windows7/windows-welcome") then
+  ost = "Windows 7 ComputerCraft Edition"
+elseif fs.isDir("dev/sda1") and fs.isDir("dev/sda2") then
+  ost = "ScaptOS"
+elseif fs.exists("ApfelOS") and fs.isDir("ApfelOS") then
+  ost = "ApfelOS"
+elseif fs.exists("fLib") then
+  ost = "FroddeOS"
+elseif fs.exists("uOS") then
+  local open = fs.open("uOS", "r")
+  local l = ""
+  repeat
+    l = open.readLine()
+  until l:find("version")
+  l = l:gsub("version = ", "")
+  v = loadstring("return " .. l)()
+  open.close()
+  ost = "uOS"
+elseif fs.exists("void/version") then
+  local open = fs.open("void/version", "r")
+  v = open.readLine()
+  open.close()
+  ost = "VoidOS"
+elseif fs.exists("core/apis/versioninfo") then
+  os.loadAPI("core/apis/versioninfo")
+  ost = "NinOS"
+  v = versioninfo.version
+  os.unloadAPI("core/apis/versioninfo")
+elseif fs.exists(".bustedOS") then
+  local open = fs.open(".bustedOS/osFiles/version", "r")
+  v = open.readLine()
+  ost = "BustedOS"
+elseif fs.exists(".system/os.program") then
+  ost = "IsaaxOS"
+  if build then
+	v = "build"
+  end
+elseif fs.exists("jupiterOS") and fs.isDir("jupiterOS") then
+  local open = fs.open("jupiterOS/files/version", "r")
+  local version = open.readAll()
+  open.close()
+  ost = "JupiterOS"
+  v = version
+elseif fs.exists("npp.e04") then
+  ost = "RockOS"
+  v = "2.5"
+elseif fs.exists(".System") and fs.isDir(".System") and fs.exists(".System/Programs/devgui") then
+  ost = "RockOS"
+  v = "3.0"
+elseif fs.exists(".sys/fos") and fs.isDir(".sys") then
+  if buildname and build then
+    ost = buildname
+	v = build
+  else
+    ost = "FlowOS"
+  end
+elseif fs.exists("linear") and fs.isDir("linear") then
+  ost = "LinearOS"
+  if fs.exists("startup") then
+    local open = fs.open("startup", "r")
+	repeat
+	  l = open.readLine()
+	until l:find("version")
+	assert(loadstring(l))()
+	v = version
+  end
+elseif fs.exists("CCWin") then
+  ost = "CCWin"
+elseif fs.exists("System") and fs.isDir("System") and fs.exists("System/Password") and fs.exists("System/bg") then
+  ost = "Floose System"
+elseif fs.exists("cp-dos") and fs.isDir("cp-dos") then
+  ost = "CP-DOS"
+elseif fs.exists("system2") then
+  ost = "CCWin"
+elseif _G.deltaOS and versionStr then
+  ost = versionStr
+elseif fs.isDir("Nova") then
+  ost = "Nova Horizon"
+elseif fs.isDir(".nova") then
+  ost = "Nova Horizon"
+elseif fs.exists("home") and fs.isDir("home") and fs.exists("home/mouse.cfg") then
+  ost = "CryptonOS"
+elseif fs.exists("System") and fs.isDir("System") and fs.exists("System/PearOS.lua") then
+  ost = "PearOS"
+elseif fs.exists("LuaSS") and fs.isDir("LuaSS") then
+  local version = ""
+  if getVersion then
+    version = getVersion()
+  end
+  v = version or ""
+  ost = "LuaSS"
+elseif fs.exists("/system/config/version") and fs.exists("/system/apis/skylark") then
+  local open = fs.open("/system/config/version", "r")
+  v = open.readAll()
+  open.close()
+  ost = "KreOS"
+elseif fs.exists("bin/KiloShell.lua") and fs.isDir("bin") and fs.exists("sbin/kernel.lua") then
+  local open = fs.open("sbin/kernel.lua","r")
+  repeat
+	line = open.readLine()
+  until line:find("VERSION")
+  line = line:gsub("local VERSION =", "return")
+  open.close()
+  local version = assert(loadstring(line))()
+  ost = "KilOS"
+  v = version
+elseif fs.exists("craftoidOS") then
+  ost = "Craftoid"
+elseif fs.exists(".kruss_files") and fs.isDir(".kruss_files") then
+  ost = "Kruss Beta"
+elseif fs.exists("system") and fs.isDir("system") and fs.exists("system/system.lua") and fs.exists("system/configs/version.lua") then
+  local open = fs.open("system/configs/version.lua", "r")
+  loadstring(open.readAll():gsub("system.", ""))()
+  open.close()
+  v = versionFull
+  ost = "ApeOS"
+  version = nil
+elseif fs.isDir("disqueC") and fs.isDir("disqueD") then
+  ost = "Wincraft 8 Pro"
+elseif fs.exists("AuroraOS") and fs.isDir("AuroraOS") then
+  ost = "AuroraOS"
+elseif OmniOS then
+  ost = "OmniOS"
+  v = OmniOS.version:gsub("^%l", string.upper) .. " " .. OmniOS.tag
+elseif fs.isDir("OmniOS") and fs.exists("OmniOS/API/OmniOS.lua") then
+  local open = fs.open("OmniOS/API/OmniOS.lua", "r")
+  local s = open.readLine():gsub("version = \"", ""):gsub("\"", ""):gsub("^%l", string.upper)
+  local t = open.readLine():gsub("tag = \"", ""):gsub("\"", "")
+  open.close()
+  ost = "OmniOS"
+  v = s .. " " .. t
+elseif fs.isDir("OmniOS") and not fs.exists("OmniOS/API/OmniOS.lua") then
+  ost = "OmniOS"
+elseif fs.isDir("turtleshell") and fs.exists("turtleshell/os.db") then
+  local open = fs.open("turtleshell/os.db", "r")
+  local t = ""
+  for i = 1, 4 do
+    t = open.readLine()
+  end
+  t = t:gsub("  ", ""):gsub(",", "")
+  loadstring(t)()
+  ost = "TurtleShell " .. lastVersion .. " Beta"
+elseif fs.isDir("B00tloader") and fs.isDir("System/API") then
+  ost = "LinOS Alpha"
+elseif fs.exists("smashapi") then
+  ost = "SmashOS"
+elseif fs.isDir("OTOS") and fs.exists("version") then
+  local open = fs.open("version", "r")
+  v = open.readAll()
+  open.close()
+  ost = "OpenTerminalOS"
+elseif O then
+  ost = "O"
+  v = O.getVersionNumber()
+elseif fs.exists("systemO/version") then
+  local open = fs.open("systemO/version", "r")
+  v = open.readAll()
+  open.close()
+  ost = "O"
+elseif fs.exists("systemO/odata/version") then
+  local open = fs.open("systemO/odata/version", "r")
+  v = open.readAll()
+  open.close()
+  ost = "O"
+elseif fs.isDir("fd") then
+  ost = "FloppyDOS"
+elseif fs.isDir("BananaOS") and fs.exists("BananaOS/system") then
+  local open = fs.open("BananaOS/system", "r")
+  repeat
+    l = open.readLine()
+  until l:find("version = ")
+  open.close()
+  loadstring(l)()
+  ost = "BananaOS"
+  v = version
+elseif OTOS then
+  if OTOS.version then
+    v = OTOS.version
+  elseif OTOS.fetch then
+    v = OTOS.fetch("version") .. " " .. OTOS.fetch("edition")
+  end
+  ost = "OpenTerminalOS"
+elseif fs.isDir("OTOS") and not fs.exists("OTOS/internalapis/OTOS") and not fs.exists("version") then
+  ost = "OpenTerminalOS"
+  v = "Nightly"
+elseif osStuff or fs.exists("library/osStuff") then
+  ost = "[os]"
+elseif fs.exists("guiapi") and fs.exists("touchpoint") and fs.exists("master") then
+  ost = "Kizz OS"
+elseif fs.exists("usr/etc/release") then
+  local open = fs.open("usr/etc/release", "r")
+  local p = open.readAll()
+  open.close()
+  ost = p
+elseif fs.exists("kernel/TestRunner.lua") and not fs.exists("usr/etc/release") then
+  ost = "TARDIX System"
+else
+  if os.version then
+    t = explode(" ", os.version())
+	ost = t[1]
+	v = t[2]
+  else
+    ost = "CraftOS"
+  end
+end
+
+v = tostring(v) or ""
+return ost, v
+end
+
+
+function getdevice()
+	if turtleedu and turtle then
+		return "ComputerCraftEdu Turtle"
+	elseif turtle and not term.isColor then
+		return "Pre-1.4 Normal Turtle"
+	elseif not term.isColor then
+		return "Pre-1.4 Normal Computer"
+	elseif commands then
+		return "Command Computer"
+	elseif term.isColor() and pocket then
+		return "Advanced Pocket Computer"
+	elseif not term.isColor() and pocket then
+		return "Normal Pocket Computer"
+	elseif term.isColor() and turtle then
+		return "Advanced Turtle"
+	elseif term.isColor() and not turtle then
+		return "Advanced Computer"
+	elseif not term.isColor() and turtle then
+		return "Normal Turtle"
+	else
+		return "Normal Computer"
+	end
+end
+
+function version() --SysInfo version
+  return "15m7d5-3502" --I tried to abbreviate the time and date (in CST/CDT) and failed. When SysInfo leaves alpha and beta, this will become an actual version number
+end
