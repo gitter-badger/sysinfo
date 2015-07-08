@@ -10,16 +10,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ]]
 
 --[[
-What's new for 15m7d7?
-- Dropped os._NAME and os._VERSION in favor for _G.osdata.name and _G.osdata.version
-- Removed extraneous spaces
-- Added partial support for Command Alpha
-- Added partial support for LoveOS
-- Added partial support for LinOS
-- Lua Script System now has full support
-- Patched ChromeOS detection
-- Patched BananaOS detection
-- Patched unexpected behavior when os.version has more than 2 spaces
+What's new for 15m7d8?
+- Added full support for Kitten OS (kOS #2)
+- Base now has full support
+- Added full support for Glass OS
 ]]
 
 local function explode(div,str) -- credit: http://richard.warburton.it
@@ -58,8 +52,19 @@ elseif fs.isDir("LyqydOS") then
   ost = "LyqydOS"
 elseif fs.exists("rainos") and fs.isDir("rainos") then
   ost = "RainOS"
-elseif fs.exists(".kernel/apis/cinter") and fs.exists(".kernel/core/plist") then
+elseif fs.exists(".kernel/core/os") then
   ost = "Base"
+  local open = fs.open(".kernel/core/os", "r")
+  repeat
+    l = open.readLine()
+  until l:find("Base V")
+  l = l:sub(2)
+  l = l:gsub("Base V", "")
+  l = l:gsub(" by Sam Gunner.", "")
+  v = l
+elseif fs.exists(".system/run.sys") then
+  ost = "Glass OS"
+  v = "5" --nowhere in the code does it reference the version, and it's discontinued, so we can assume it's 5
 elseif lyokos then
   ost = "LyokOS"
   v = lyokos.version()
@@ -199,6 +204,15 @@ elseif fs.exists("jupiterOS") and fs.isDir("jupiterOS") then
   open.close()
   ost = "JupiterOS"
   v = version
+elseif fs.exists(".kitten/api/kitapi") and fs.exists("startup") then
+  ost = "Kitten OS"
+  local open = fs.open("startup", "r")
+  repeat
+    l = open.readLine()
+  until l:find("version")
+  open.close()
+  l = l:gsub("local version =", "return")
+  v = loadstring(l)()
 elseif fs.exists("npp.e04") then
   ost = "RockOS"
   v = "2.5"
@@ -398,5 +412,5 @@ function getdevice()
 end
 
 function version() --SysInfo version
-  return "15m7d7" --July 7th, 2015
+  return "15m7d8" --July 8th, 2015
 end
