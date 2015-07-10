@@ -10,11 +10,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ]]
 
 --[[
-What's new for 15m7d8?
-- Added full support for Kitten OS (kOS #2)
-- Base now has full support
-- Added full support for Glass OS
+What's new for 15m7d9?
+- Added full support for MCOS Dev Release
 ]]
+
 
 local function explode(div,str) -- credit: http://richard.warburton.it
   if (div=='') then return false end
@@ -106,6 +105,15 @@ elseif fs.exists("LimeFyre/.version") then
   v = open.readAll()
   open.close()
   ost = "LimeFyre 2"
+elseif fs.isDir("MCOS") and fs.exists("startup") then
+  ost = "MCOS"
+  local open = fs.open("startup", "r")
+  repeat
+    l = open.readLine() or "version = \"\""
+  until l:find("version")
+  l = l:gsub("version =", "return")
+  open.close()
+  v = loadstring(l)()
 elseif fs.exists("skins/limefyre") then
   ost = "LimeFyre Classic"
 elseif fs.exists("OS/chromestore") and fs.exists("OS/choose") then
@@ -412,5 +420,5 @@ function getdevice()
 end
 
 function version() --SysInfo version
-  return "15m7d8" --July 8th, 2015
+  return "15m7d9" --July 9th, 2015
 end
