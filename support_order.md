@@ -1,6 +1,10 @@
 # Support Order
 Each OS has a priority in detection. Any OSes that have a higher priority than another OS will be detected first.
-If your OS is low priority, don't take it as an offense: they are chosen randomly. As a matter of fact, TARDIX is at the end of the list and is one of my favorite OSes.
+
+If your OS is low priority, don't take it as an offense: they are chosen randomly. 
+
+As a matter of fact, TARDIX is at the end of the list and is one of my favorite OSes.
+
 Here are the supported OS, in list of priority:
 - Dynamic Variable Detection
 - Dynamic File Detection
