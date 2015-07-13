@@ -1,0 +1,96 @@
+# Support Order
+Each OS has a priority in detection. Any OSes that have a higher priority than another OS will be detected first.
+If your OS is low priority, don't take it as an offense: they are chosen randomly. As a matter of fact, TARDIX is at the end of the list and is one of my favorite OSes.
+Here are the supported OS, in list of priority:
+- Dynamic Variable Detection
+- Dynamic File Detection
+- LyqydOS
+- RainOS
+- Base
+- Glass OS
+- LyokOS
+- NanoOS
+- LoveOS
+- ZoS
+- ~~Extended Shell~~ (removed in 15w29a due to shaky detection)
+- OneOS X.X.X
+- OneOS 2.0
+- OneOS 1.0
+- Command Alpha
+- LinOS
+- LabyOS
+- NxOS 1.0
+- NxOS 2.0
+- SertexOS
+- LimeFyre 2
+- MCOS Dev Release
+- LimeFyre Classic
+- ChromeOS (version detected through core files)
+- ChromeOS 2.0
+- ChromeOS 2.5
+- ChromeOS
+- KeplerOS
+- LongOS
+- AdmiOS
+- Pepdroll Classic
+- Pepdroll Six Professional
+- FlixOS Metro
+- FlixOS Beta
+- Stained Glass OS
+- PocketShell
+- PockyOS
+- Unix for Minecraft
+- UberOS
+- bOS
+- DoorOS
+- ApfelOS (version detected through variable)
+- ApfelOS PE (version detected through variable)
+- Windows 7 ComputerCraft Edition
+- ScaptOS
+- ApfelOS (version not detected)
+- FroddeOS
+- uOS
+- VoidOS
+- NinOS
+- BustedOS
+- IsaaxOS
+- JupiterOS
+- KittenOS
+- RockOS 2.5
+- RockOS 3.0
+- FlowOS
+- LinearOS
+- CCWin
+- Floose System
+- CP-DOS
+- CCWin
+- DeltaOS
+- Nova Horizon
+- Nova Horizon (older version)
+- CryptonOS
+- PearOS
+- Lua Script System
+- KreOS
+- KilOS
+- Craftoid
+- Kruss Beta
+- ApeOS
+- Wincraft 8 Pro
+- AuroraOS
+- OmniOS
+- TurtleShell Beta
+- LinOS Alpha (older version?)
+- ~~SmashOS~~ (removed in 15w29a due to shaky detection)
+- ~~OpenTerminalOS~~ (this stage of detection was removed in 15w29a, OTOS can still be detected however)
+- O (using public API)
+- O (older version)
+- O (very old version)
+- FloppyDOS
+- BananaOS
+- OpenTerminalOS
+- OpenTerminalOS Nightly (very old version)
+- [os]
+- Kizz OS
+- Dynamic detection for TARDIX OSes
+- TARDIX System (if couldn't find dynamic)
+- CraftOS
