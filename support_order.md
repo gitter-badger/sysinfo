@@ -5,7 +5,7 @@ If your OS is low priority, don't take it as an offense: they are chosen randoml
 
 As a matter of fact, TARDIX is at the end of the list and is one of my favorite OSes.
 
-Here are the supported OS, in list of priority:
+Here are the supported OSes, in list of priority:
 - Dynamic Variable Detection
 - Dynamic File Detection
 - LyqydOS
