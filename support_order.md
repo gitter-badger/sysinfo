@@ -9,6 +9,7 @@ Here are the supported OSes, in list of priority:
 - Dynamic Variable Detection
 - Dynamic File Detection
 - LyqydOS
+- Craftbang
 - RainOS
 - Base
 - Glass OS
