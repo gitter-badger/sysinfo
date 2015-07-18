@@ -10,8 +10,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ]]
 
 --[[
-What's new for 15m7d9?
-- Added full support for MCOS Dev Release
+What's new for 15w29a?
+- Downgraded GlassOS support to partial
+- Upgraded [os] support to full
+- Removed Extended Shell detection due to it being shaky
+- Removed first stage of OTOS detection
+- Removed SmashOS detection due to it being shaky
+- Added full support for Craftbang
+- Implemented usage of O.getReleaseVersion()
+- Added support for future Lua 5.2 update
 ]]
 
 
@@ -27,9 +34,11 @@ local function explode(div,str) -- credit: http://richard.warburton.it
   return arr
 end
 
+
 function getos()
 local ost = ""
 local v = ""
+
 if osdata then
   ost = osdata.name
   v = osdata.version
@@ -45,10 +54,18 @@ elseif fs.isDir("LyqydOS") then
 	  line = open.readLine()
 	until line:find("versionNumber")
 	line = line:gsub("local ", "")
-	loadstring(line)()
+	load(line)()
 	v = versionNumber
   end
   ost = "LyqydOS"
+elseif fs.isDir("craftbang") then
+  ost = "Craftbang"
+  local open = fs.open("craftbang/session", "r")
+  repeat
+    line = open.readLine() or 'version = ""'
+  until line:find("version = ")
+  line = line:gsub("version = ", "return ")
+  v = load(line)()
 elseif fs.exists("rainos") and fs.isDir("rainos") then
   ost = "RainOS"
 elseif fs.exists(".kernel/core/os") then
@@ -63,7 +80,6 @@ elseif fs.exists(".kernel/core/os") then
   v = l
 elseif fs.exists(".system/run.sys") then
   ost = "Glass OS"
-  v = "5" --nowhere in the code does it reference the version, and it's discontinued, so we can assume it's 5
 elseif lyokos then
   ost = "LyokOS"
   v = lyokos.version()
@@ -73,23 +89,21 @@ elseif fs.isDir("Love") then
   ost = "LoveOS"
 elseif VERSION_STRING and VERSION_STRING:match("XWin") then
   ost = VERSION_STRING:gsub("Kernel Version ", "")
-elseif fs.exists("ZROOT") and fs.isDir("ZROOT") then
+elseif fs.isDir("ZROOT") then
   ost = "ZoS"
-elseif fs.exists(".shell.log") then
-  ost = os.version() .. " Extended Shell"
 elseif OneOS then
   ost = "OneOS"
   v = OneOS.Version()
-elseif not OneOS and fs.exists("/System/APIs/System.lua") then
-  ost = "OneOS 2"
-  v = "2"
+elseif fs.exists("/System/APIs/System.lua") then
+  ost = "OneOS"
+  v = "2.0"
+elseif fs.exists("/System/API/Bedrock.lua") then
+  ost = "OneOS"
+  v = "1.0"
 elseif cmd or fs.isDir(".cmd") then --APIs can't access "cmd" for some stupid reason
   ost = "Command Alpha"
 elseif fs.exists("system/os/apps/desktop") then
   ost = "LinOS"
-elseif not oneOS and fs.exists("/System/API/Bedrock.lua") then
-  ost = "OneOS"
-  v = "1"
 elseif fs.exists("LabyOS") and fs.isDir("LabyOS") then
   ost = "LabyOS"
 elseif fs.exists("NxOS") and fs.isDir("NxOS") and fs.exists("NxOS/Files") then
@@ -113,7 +127,7 @@ elseif fs.isDir("MCOS") and fs.exists("startup") then
   until l:find("version")
   l = l:gsub("version =", "return")
   open.close()
-  v = loadstring(l)()
+  v = load(l)()
 elseif fs.exists("skins/limefyre") then
   ost = "LimeFyre Classic"
 elseif fs.exists("OS/chromestore") and fs.exists("OS/choose") then
@@ -123,7 +137,7 @@ elseif fs.exists("OS/chromestore") and fs.exists("OS/choose") then
   until line:find("version")
   open.close()
   line = line:gsub("local version = ", "")
-  v = loadstring("return " .. line)()
+  v = load("return " .. line)()
   ost = "ChromeOS"
 elseif fs.exists("OS/chromestore") and fs.isDir("OS") and fs.exists("OS/d2.img") then
   ost = "ChromeOS"
@@ -184,7 +198,7 @@ elseif fs.exists("uOS") then
     l = open.readLine()
   until l:find("version")
   l = l:gsub("version = ", "")
-  v = loadstring("return " .. l)()
+  v = load("return " .. l)()
   open.close()
   ost = "uOS"
 elseif fs.exists("void/version") then
@@ -213,14 +227,14 @@ elseif fs.exists("jupiterOS") and fs.isDir("jupiterOS") then
   ost = "JupiterOS"
   v = version
 elseif fs.exists(".kitten/api/kitapi") and fs.exists("startup") then
-  ost = "Kitten OS"
+  ost = "KittenOS"
   local open = fs.open("startup", "r")
   repeat
     l = open.readLine()
   until l:find("version")
   open.close()
   l = l:gsub("local version =", "return")
-  v = loadstring(l)()
+  v = load(l)()
 elseif fs.exists("npp.e04") then
   ost = "RockOS"
   v = "2.5"
@@ -241,7 +255,7 @@ elseif fs.exists("linear") and fs.isDir("linear") then
 	repeat
 	  l = open.readLine()
 	until l:find("version")
-	assert(loadstring(l))()
+	assert(load(l))()
 	v = version
   end
 elseif fs.exists("CCWin") then
@@ -269,7 +283,7 @@ elseif fs.exists("LuaSS/apis/LuaSS") then
   until l:find("version = ")
   l = l:gsub("version =", "return")
   open.close()
-  v = loadstring(l)()
+  v = load(l)()
   ost = "LuaSS"
 elseif fs.exists("/system/config/version") and fs.exists("/system/apis/skylark") then
   local open = fs.open("/system/config/version", "r")
@@ -283,7 +297,7 @@ elseif fs.exists("bin/KiloShell.lua") and fs.isDir("bin") and fs.exists("sbin/ke
   until line:find("VERSION")
   line = line:gsub("local VERSION =", "return")
   open.close()
-  local version = assert(loadstring(line))()
+  local version = assert(load(line))()
   ost = "KilOS"
   v = version
 elseif fs.exists("craftoidOS") then
@@ -292,7 +306,7 @@ elseif fs.exists(".kruss_files") and fs.isDir(".kruss_files") then
   ost = "Kruss Beta"
 elseif fs.exists("system") and fs.isDir("system") and fs.exists("system/system.lua") and fs.exists("system/configs/version.lua") then
   local open = fs.open("system/configs/version.lua", "r")
-  loadstring(open.readAll():gsub("system.", ""))()
+  load(open.readAll():gsub("system.", ""))()
   open.close()
   v = versionFull
   ost = "ApeOS"
@@ -320,20 +334,17 @@ elseif fs.isDir("turtleshell") and fs.exists("turtleshell/os.db") then
     t = open.readLine()
   end
   t = t:gsub("  ", ""):gsub(",", "")
-  loadstring(t)()
+  load(t)()
   ost = "TurtleShell " .. lastVersion .. " Beta"
 elseif fs.isDir("B00tloader") and fs.isDir("System/API") then
   ost = "LinOS Alpha"
-elseif fs.exists("smashapi") then
-  ost = "SmashOS"
-elseif fs.isDir("OTOS") and fs.exists("version") then
-  local open = fs.open("version", "r")
-  v = open.readAll()
-  open.close()
-  ost = "OpenTerminalOS"
 elseif O then
   ost = "O"
-  v = O.getVersionNumber()
+  if O.getReleaseVersion then
+    v = O.getReleaseVersion()
+  elseif O.getVersionNumber then
+    v = O.getVersionNumber()
+  end
 elseif fs.exists("systemO/version") then
   local open = fs.open("systemO/version", "r")
   v = open.readAll()
@@ -353,7 +364,7 @@ elseif fs.isDir("BananaOS") and fs.exists("BananaOS/system") then
   until l:find("version = ")
   open.close()
   l = l:gsub("version = ", "")
-  v = loadstring("return " .. l)()
+  v = load("return " .. l)()
   ost = "BananaOS"
 elseif OTOS then
   if OTOS.version then
@@ -367,6 +378,11 @@ elseif fs.isDir("OTOS") and not fs.exists("OTOS/internalapis/OTOS") and not fs.e
   v = "Nightly"
 elseif osStuff or fs.exists("library/osStuff") then
   ost = "[os]"
+  if osStuff then
+    if osStuff.version then
+	  v = osStuff.version
+	end
+  end
 elseif fs.exists("guiapi") and fs.exists("touchpoint") and fs.exists("master") then
   ost = "Kizz OS"
 elseif fs.exists("usr/etc/release") then
@@ -420,5 +436,5 @@ function getdevice()
 end
 
 function version() --SysInfo version
-  return "15m7d9" --July 9th, 2015
+  return "15w29a" --Released July 18th, 2015
 end
