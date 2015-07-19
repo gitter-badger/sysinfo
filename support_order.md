@@ -14,6 +14,7 @@ Here are the supported OSes, in list of priority:
 - Base
 - Glass OS
 - LyokOS
+- ~~ClamShell~~ (added in next release)
 - NanoOS
 - LoveOS
 - ZoS
